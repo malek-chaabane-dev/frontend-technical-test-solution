@@ -236,4 +236,28 @@ describe('Home messaging shell', () => {
     await waitFor(() => expect(screen.getByText('Aucune conversation')).toBeInTheDocument())
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
+
+  it('returns to the conversation list from the selected mobile view', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          id: 1,
+          senderId: 1,
+          senderNickname: 'Thibaut',
+          recipientId: 2,
+          recipientNickname: 'Jeremie',
+          lastMessageTimestamp: 10,
+        },
+      ],
+    }) as typeof fetch
+
+    render(<Home />)
+    fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Retour' }))
+
+    expect(screen.getByText('Conversations')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Retour' })).not.toBeInTheDocument()
+  })
 })

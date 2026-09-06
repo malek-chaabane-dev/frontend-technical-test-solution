@@ -54,7 +54,7 @@ export default function Home(): ReactElement {
         />
       </Head>
 
-      <div className="flex h-svh flex-col overflow-hidden bg-white">
+      <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-white">
         <header className="flex shrink-0 items-center gap-3 border-b border-zinc-200 px-4 py-2.5">
           <Image
             src={Logo}
@@ -67,7 +67,7 @@ export default function Home(): ReactElement {
           <h1 className="text-lg font-semibold text-zinc-900">Messages</h1>
         </header>
 
-        <main className="flex min-h-0 flex-1">
+        <main className="flex min-h-0 min-w-0 flex-1">
           <div
             className={`h-full min-h-0 w-full md:w-80 md:shrink-0 lg:w-96 ${
               isConversationOpen ? 'hidden md:flex' : 'flex'

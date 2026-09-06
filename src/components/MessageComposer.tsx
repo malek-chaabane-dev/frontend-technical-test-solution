@@ -41,7 +41,10 @@ export function MessageComposer({ disabled, onSubmit }: MessageComposerProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-zinc-200 bg-white p-3">
+    <form
+      onSubmit={handleSubmit}
+      className="shrink-0 border-t border-zinc-200 bg-white p-3"
+    >
       {error ? (
         <p role="alert" className="mb-2 text-sm text-red-700">
           {error}
