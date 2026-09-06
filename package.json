@@ -11,6 +11,12 @@
     "test": "jest",
     "lint": "next lint"
   },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
+  },
   "engines": {
     "node": ">=18.0.0"
   },
@@ -28,12 +34,15 @@
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.5.5",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.2.2",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "json-server": "^0.17.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.8.2"
   }
 }
