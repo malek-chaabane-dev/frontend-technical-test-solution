@@ -1,6 +1,7 @@
 import { EmptyState } from './EmptyState'
 import { MessageList } from './MessageList'
 import type { Message } from '../types/message'
+import { MessageComposer } from './MessageComposer'
 
 type ConversationPanelProps = {
   selectedConversationId: number | null
@@ -10,6 +11,7 @@ type ConversationPanelProps = {
   isLoading: boolean
   error: Error | null
   onRetry: () => void
+  onSendMessage: (body: string) => Promise<void>
   onBack: () => void
 }
 
@@ -21,6 +23,7 @@ export function ConversationPanel({
   isLoading,
   error,
   onRetry,
+  onSendMessage,
   onBack,
 }: ConversationPanelProps) {
   const hasSelection = selectedConversationId !== null
@@ -64,14 +67,12 @@ export function ConversationPanel({
         )}
       </div>
 
-      <div className="shrink-0 border-t border-zinc-200 bg-white p-3">
-        <div className="flex items-center rounded-full border border-zinc-300 px-4 py-2 text-sm text-zinc-400">
-          <span className="flex-1">Écrire un message</span>
-          <span aria-hidden="true" className="text-zinc-400">
-            →
-          </span>
-        </div>
-      </div>
+      {hasSelection ? (
+        <MessageComposer
+          disabled={isLoading}
+          onSubmit={onSendMessage}
+        />
+      ) : null}
     </section>
   )
 }

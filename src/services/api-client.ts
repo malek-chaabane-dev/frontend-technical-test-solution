@@ -33,3 +33,29 @@ export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T>
     throw new ApiError('La réponse du service est invalide.', response.status)
   }
 }
+
+export async function postJson<T>(path: string, body: unknown): Promise<T> {
+  let response: Response
+
+  try {
+    response = await fetch(`${getApiBaseUrl()}${path}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    throw new ApiError('La connexion au service est indisponible.')
+  }
+
+  if (!response.ok) {
+    throw new ApiError('Le message n\'a pas pu être envoyé.', response.status)
+  }
+
+  try {
+    return (await response.json()) as T
+  } catch {
+    throw new ApiError('La réponse du service est invalide.', response.status)
+  }
+}

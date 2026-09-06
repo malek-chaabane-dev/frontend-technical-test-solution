@@ -7,6 +7,7 @@ type UseConversationMessagesResult = {
   isLoading: boolean
   error: Error | null
   retry: () => void
+  addMessage: (message: Message) => void
 }
 
 export function useConversationMessages(
@@ -19,6 +20,14 @@ export function useConversationMessages(
 
   const retry = useCallback(() => {
     setRequestKey((currentKey) => currentKey + 1)
+  }, [])
+
+  const addMessage = useCallback((message: Message) => {
+    setMessages((currentMessages) =>
+      [...currentMessages, message].sort(
+        (first, second) => toTimestamp(first.timestamp) - toTimestamp(second.timestamp),
+      ),
+    )
   }, [])
 
   useEffect(() => {
@@ -57,5 +66,11 @@ export function useConversationMessages(
     return () => controller.abort()
   }, [conversationId, requestKey])
 
-  return { messages, isLoading, error, retry }
+  return { messages, isLoading, error, retry, addMessage }
+}
+
+function toTimestamp(timestamp: string): number {
+  const numericTimestamp = Number(timestamp)
+
+  return Number.isFinite(numericTimestamp) ? numericTimestamp : Date.parse(timestamp)
 }

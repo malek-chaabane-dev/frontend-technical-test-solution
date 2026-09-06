@@ -1,4 +1,4 @@
-import { getJson } from './api-client'
+import { getJson, postJson } from './api-client'
 import type { Message } from '../types/message'
 
 type RawMessage = Omit<Message, 'timestamp'> & {
@@ -53,4 +53,40 @@ function toTimestamp(timestamp: string): number {
   }
 
   return Date.parse(timestamp)
+}
+
+type CreateMessageResponse = {
+  id: number
+}
+
+function isCreateMessageResponse(value: unknown): value is CreateMessageResponse {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).id === 'number'
+  )
+}
+
+export async function sendMessage(
+  conversationId: number,
+  authorId: number,
+  body: string,
+  timestamp: number,
+): Promise<Message> {
+  const response = await postJson<unknown>(
+    `/messages/${encodeURIComponent(String(conversationId))}`,
+    { body, timestamp },
+  )
+
+  if (!isCreateMessageResponse(response)) {
+    throw new Error("La réponse de création du message est invalide.")
+  }
+
+  return {
+    id: response.id,
+    conversationId,
+    authorId,
+    timestamp: String(timestamp),
+    body,
+  }
 }

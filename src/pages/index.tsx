@@ -9,6 +9,7 @@ import { useConversations } from '../hooks/useConversations'
 import { getLoggedUserId } from '../utils/getLoggedUserId'
 import { useConversationMessages } from '../hooks/useConversationMessages'
 import { getConversationPartner } from '../utils/conversation-utils'
+import { sendMessage } from '../services/messages-api'
 
 export default function Home(): ReactElement {
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(
@@ -26,7 +27,22 @@ export default function Home(): ReactElement {
     isLoading: areMessagesLoading,
     error: messagesError,
     retry: retryMessages,
+    addMessage,
   } = useConversationMessages(selectedConversationId)
+
+  async function handleSendMessage(body: string): Promise<void> {
+    if (selectedConversationId === null) {
+      return
+    }
+
+    const createdMessage = await sendMessage(
+      selectedConversationId,
+      loggedUserId,
+      body,
+      Math.floor(Date.now() / 1000),
+    )
+    addMessage(createdMessage)
+  }
 
   return (
     <>
@@ -83,6 +99,7 @@ export default function Home(): ReactElement {
               isLoading={areMessagesLoading}
               error={messagesError}
               onRetry={retryMessages}
+              onSendMessage={handleSendMessage}
               onBack={() => setSelectedConversationId(null)}
             />
           </div>
