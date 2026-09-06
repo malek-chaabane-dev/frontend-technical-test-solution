@@ -76,5 +76,5 @@ requests.
 ## Known limitations
 
 - The logged user is fixed to fixture user `1`, as provided by the technical-test setup.
-- Conversation creation and deletion are outside the MVP.
+- New conversation creation is supported through the user-selection dialog.
 - The local json-server is a development fixture and is not a production backend.
