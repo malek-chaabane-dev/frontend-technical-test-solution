@@ -385,8 +385,8 @@ describe('Home messaging shell', () => {
         return Promise.resolve({
           ok: true,
           json: async () => [
-            { id: 1, nickname: 'Thibaut', token: 'token' },
-            { id: 2, nickname: 'Jeremie', token: 'token' },
+            { id: 1, nickname: 'Thibaut' },
+            { id: 2, nickname: 'Jeremie' },
           ],
         })
       }

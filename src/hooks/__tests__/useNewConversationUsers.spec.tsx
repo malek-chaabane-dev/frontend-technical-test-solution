@@ -24,7 +24,7 @@ describe('useNewConversationUsers', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.users).toEqual([
-      { id: 2, nickname: 'Jeremie', token: 'token' },
+      { id: 2, nickname: 'Jeremie' },
     ])
     expect(result.current.error).toBeNull()
   })

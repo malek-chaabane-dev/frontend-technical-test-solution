@@ -23,7 +23,13 @@ export default function Home(): ReactElement {
 
   const isConversationOpen = selectedConversationId !== null
   const loggedUserId = getLoggedUserId()
-  const { conversations, isLoading, error, retry } = useConversations(loggedUserId)
+  const {
+    conversations,
+    isLoading,
+    error,
+    retry,
+    updateConversationTimestamp,
+  } = useConversations(loggedUserId)
   const {
     create: createNewConversation,
     isCreating: isCreatingConversation,
@@ -59,6 +65,10 @@ export default function Home(): ReactElement {
       Math.floor(Date.now() / 1000),
     )
     addMessage(createdMessage)
+    updateConversationTimestamp(
+      selectedConversationId,
+      Number(createdMessage.timestamp),
+    )
   }
 
   async function handleCreateConversation(recipientId: number): Promise<void> {

@@ -10,7 +10,7 @@ export function getConversationPartner(
 }
 
 export function formatConversationTimestamp(timestamp: number): string {
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat('en-US', {
     dateStyle: 'short',
     timeStyle: 'short',
   }).format(new Date(timestamp * 1000))

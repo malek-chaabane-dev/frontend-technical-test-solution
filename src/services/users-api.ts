@@ -13,8 +13,7 @@ function isUser(value: unknown): value is User {
   return (
     Number.isInteger(user.id) &&
     typeof user.nickname === 'string' &&
-    user.nickname.trim() !== '' &&
-    typeof user.token === 'string'
+    user.nickname.trim() !== ''
   )
 }
 
@@ -25,5 +24,5 @@ export async function getUsers(signal?: AbortSignal): Promise<User[]> {
     throw createValidationError(MESSAGING_TEXT.errors.invalidUsersResponse)
   }
 
-  return response
+  return response.map(({ id, nickname }) => ({ id, nickname }))
 }

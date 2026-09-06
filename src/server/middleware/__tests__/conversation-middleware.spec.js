@@ -3,6 +3,7 @@ const {
   sendUserConversations,
 } = require('../conversation-handlers')
 const { enrichCreatedMessage } = require('../message-handlers')
+const { sendPublicUsers } = require('../user-handlers')
 
 const database = {
   users: [
@@ -63,5 +64,18 @@ describe('conversation middleware helpers', () => {
     enrichCreatedMessage(request)
 
     expect(request.body).toEqual({ body: 'Hello', conversationId: 7, authorId: 1 })
+  })
+
+  it('returns public user fields without exposing tokens', () => {
+    const response = { status: jest.fn().mockReturnThis(), json: jest.fn() }
+    const databaseWithToken = {
+      users: [{ id: 1, nickname: 'Thibaut', token: 'secret' }],
+    }
+
+    sendPublicUsers(response, databaseWithToken)
+
+    expect(response.json).toHaveBeenCalledWith([
+      { id: 1, nickname: 'Thibaut' },
+    ])
   })
 })

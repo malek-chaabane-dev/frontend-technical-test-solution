@@ -17,7 +17,7 @@ describe('getUsers', () => {
     global.fetch = fetchMock
 
     await expect(getUsers()).resolves.toEqual([
-      { id: 2, nickname: 'Jeremie', token: 'token' },
+      { id: 2, nickname: 'Jeremie' },
     ])
     expect(fetchMock).toHaveBeenCalledWith('http://localhost:3005/users', {
       signal: undefined,

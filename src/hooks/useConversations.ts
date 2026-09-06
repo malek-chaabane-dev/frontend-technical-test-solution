@@ -10,6 +10,7 @@ type UseConversationsResult = {
   isLoading: boolean
   error: Error | null
   retry: () => void
+  updateConversationTimestamp: (conversationId: number, timestamp: number) => void
 }
 
 export function useConversations(userId: number): UseConversationsResult {
@@ -23,6 +24,25 @@ export function useConversations(userId: number): UseConversationsResult {
   const retry = useCallback(() => {
     setRequestKey((currentKey) => currentKey + 1)
   }, [])
+
+  const updateConversationTimestamp = useCallback(
+    (conversationId: number, timestamp: number) => {
+      setState((currentState) => ({
+        ...currentState,
+        data: [...currentState.data]
+          .map((conversation) =>
+            conversation.id === conversationId
+              ? { ...conversation, lastMessageTimestamp: timestamp }
+              : conversation,
+          )
+          .sort(
+            (first, second) =>
+              second.lastMessageTimestamp - first.lastMessageTimestamp,
+          ),
+      }))
+    },
+    [],
+  )
 
   useEffect(() => {
     const controller = new AbortController()
@@ -64,5 +84,6 @@ export function useConversations(userId: number): UseConversationsResult {
     isLoading: state.status === 'loading',
     error: state.error,
     retry,
+    updateConversationTimestamp,
   }
 }
