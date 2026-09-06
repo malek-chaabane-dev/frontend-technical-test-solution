@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import Home from '../pages'
 
 describe('Home messaging shell', () => {
@@ -132,7 +132,9 @@ describe('Home messaging shell', () => {
     expect(screen.getByRole('button', { name: 'Envoi...' })).toBeDisabled()
     expect(screen.getByDisplayValue('Bonjour')).toBeInTheDocument()
 
-    resolveSend?.({ ok: true, json: async () => ({ id: 3 }) } as Response)
+    await act(async () => {
+      resolveSend?.({ ok: true, json: async () => ({ id: 3 }) } as Response)
+    })
     await waitFor(() => expect(screen.queryByDisplayValue('Bonjour')).not.toBeInTheDocument())
     expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
     expect(screen.getByText('Bonjour')).toBeInTheDocument()
@@ -218,6 +220,92 @@ describe('Home messaging shell', () => {
 
     await waitFor(() => expect(postRequest).toHaveBeenCalledTimes(1))
     await waitFor(() => expect(screen.queryByDisplayValue('Bonjour')).not.toBeInTheDocument())
+  })
+
+  it('does not submit a whitespace-only message', async () => {
+    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL) => {
+      if (String(input).endsWith('/conversations/1')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            {
+              id: 1,
+              senderId: 1,
+              senderNickname: 'Thibaut',
+              recipientId: 2,
+              recipientNickname: 'Jeremie',
+              lastMessageTimestamp: 10,
+            },
+          ],
+        })
+      }
+
+      return Promise.resolve({ ok: true, json: async () => [] })
+    })
+    global.fetch = fetchMock as typeof fetch
+
+    render(<Home />)
+    fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
+    const input = await screen.findByLabelText('Votre message')
+    await waitFor(() => expect(input).toBeEnabled())
+    fireEvent.change(input, { target: { value: '   ' } })
+
+    expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
+    fireEvent.submit(input.closest('form') as HTMLFormElement)
+
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      'http://localhost:3005/messages/1',
+      expect.objectContaining({ method: 'POST' }),
+    )
+  })
+
+  it('sends only one request for a double submission', async () => {
+    let resolveSend: ((response: Response) => void) | undefined
+    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+
+      if (url.endsWith('/conversations/1')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            {
+              id: 1,
+              senderId: 1,
+              senderNickname: 'Thibaut',
+              recipientId: 2,
+              recipientNickname: 'Jeremie',
+              lastMessageTimestamp: 10,
+            },
+          ],
+        })
+      }
+
+      if (init?.method === 'POST') {
+        return new Promise<Response>((resolve) => {
+          resolveSend = resolve
+        })
+      }
+
+      return Promise.resolve({ ok: true, json: async () => [] })
+    })
+    global.fetch = fetchMock as typeof fetch
+
+    render(<Home />)
+    fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
+    const input = await screen.findByLabelText('Votre message')
+    await waitFor(() => expect(input).toBeEnabled())
+    fireEvent.change(input, { target: { value: 'Bonjour' } })
+    const form = input.closest('form') as HTMLFormElement
+
+    fireEvent.submit(form)
+    fireEvent.submit(form)
+
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1)
+
+    await act(async () => {
+      resolveSend?.({ ok: true, json: async () => ({ id: 3 }) } as Response)
+    })
   })
 
   it('retries a failed conversation load successfully', async () => {
