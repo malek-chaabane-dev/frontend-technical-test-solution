@@ -1,71 +1,80 @@
-# Context :
+# Leboncoin Messaging
 
-At leboncoin, our users can share messages about a transaction, or ask for informations about any products.
+Messaging interface built with Next.js 15, React 19, TypeScript and Tailwind CSS.
+The application uses the Pages Router and a local json-server API for the technical test.
 
-Your job is to create the interface to consult those messages.
-The interface needs to work on both desktop & mobile devices.
+## Requirements
 
-In addition to your code, a README explaining your thought process and your choices would be appreciated.
+- Node.js 18 or newer.
+- npm.
 
-# Exercise :
+## Installation
 
-- Display a list of all the conversations
-- Allow the user to select a conversation
-  - Inside the conversation, there is a list of all the messages between these two users.
-  - As a user, you can type and send new messages in this conversation
+```bash
+npm ci
+```
 
-**As your application can be used by millions of users, make sure to provide some robust safety guards.**
+If `npm ci` is blocked on Windows because the Next.js SWC binary is locked, stop running
+Node/Next processes and retry the command.
 
-### Sketches :
+## Configuration
 
-Obvisouly, it is up to you to make something nice and pretty, you are free to design it the way you like. The sketches are here to give you an idea on how it should look.
+Copy `.env.example` to `.env.local` when a different API URL is needed:
 
-<details>
-  <summary>Click to see the sketches</summary>
-  
-Mobile list :
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3005
+```
 
-![](./sketches/list-mobile.jpg)
+The application falls back to `http://localhost:3005` when the variable is not defined.
 
-Desktop list :
+## Run locally
 
-![](./sketches/list-desktop.jpg)
+Start the API in one terminal:
 
-Mobile conversation :
+```bash
+npm run start-server
+```
 
-![](./sketches/conv-mobile.jpg)
+Start Next.js in another terminal:
 
-Desktop conversation :
+```bash
+npm run dev
+```
 
-![](./sketches/conv-desktop.jpg)
+Open [http://localhost:3000](http://localhost:3000).
 
-</details>
+The API contract is documented in [docs/api-swagger.yaml](docs/api-swagger.yaml). The
+local server uses the documented paths and normalizes created fixture messages with the
+conversation and author identifiers required by the read model.
 
-### API :
+## Available commands
 
-You can find the API swagger file in `docs/api-swagger.yaml`.
+```bash
+npm test -- --runInBand  # Run the Jest and Testing Library suite
+npm run lint             # Run Next.js ESLint checks
+npm run build            # Create a production build, including lint checks
+npm start                # Serve the production build
+```
 
-For a better readibility, you can view it on [https://leboncoin.tech/frontend-technical-test/](https://leboncoin.tech/frontend-technical-test/).
+## Architecture and behavior
 
----
+- `src/pages/index.tsx` coordinates the selected conversation and page layout.
+- Components render the conversation list, messages, empty/error states and composer.
+- Hooks own asynchronous loading, cancellation, retry and stale-request protection.
+- Services own HTTP requests, status handling and runtime response validation.
+- The UI uses a two-column desktop layout and a single-view mobile layout.
+- Failed reads expose a retry action. Failed sends keep the draft text.
+- Message timestamps from numeric fixtures are normalized at the service boundary.
 
-## Bonus 1 :
+## Testing strategy
 
-We provide some conversation samples, but can you improve the app so the user can now create new conversations ?
+Tests mock `fetch` at the service boundary and do not require a running API server.
+They cover loading, empty and error states, conversation selection, message display,
+message sending, duplicate-submit protection, retries, malformed responses and stale
+requests.
 
-## Bonus 2 :
+## Known limitations
 
-Our infrastructure is a bit shaky.. Sometimes the servers are crashing. “It’s not you, it’s me”, but maybe you can display something nice to warn the user and handle it gracefully.
-
-## Do you want to make the app even better ?
-
-Feel free to make as many improvements as you like.
-We love creativity and technical challenges.
-
-If you are out of ideas, here are some thoughts :
-
-- As we want to reach our users anywhere, we need to make sure the app is performing well. What can you do to make it really fast ?
-
-- Our goal is to support everybody in the country, including people with disabilities. As a good citizen and a good developer, can you make sure the app is accessible for everyone ?
-
-- We all love to relax after a hard day’s work. It would be a shame if we didn’t feel confident enough about the upcoming automatic deployment. Are you sure everything has been tested thoroughly ?
+- The logged user is fixed to fixture user `1`, as provided by the technical-test setup.
+- Conversation creation and deletion are outside the MVP.
+- The local json-server is a development fixture and is not a production backend.

@@ -2,7 +2,11 @@ import { getMessages } from '../messages-api'
 
 describe('getMessages', () => {
   afterEach(() => {
-    delete global.fetch
+    Object.defineProperty(global, 'fetch', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    })
   })
 
   it('requests the conversation endpoint, normalizes timestamps, and sorts chronologically', async () => {

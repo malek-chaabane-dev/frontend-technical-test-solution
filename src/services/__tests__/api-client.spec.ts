@@ -2,7 +2,11 @@ import { getJson } from '../api-client'
 
 describe('api-client', () => {
   afterEach(() => {
-    delete global.fetch
+    Object.defineProperty(global, 'fetch', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    })
   })
 
   it('normalizes a 503 response', async () => {

@@ -2,7 +2,11 @@ import { sendMessage } from '../messages-api'
 
 describe('sendMessage', () => {
   afterEach(() => {
-    delete global.fetch
+    Object.defineProperty(global, 'fetch', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    })
   })
 
   it('posts the body and Unix timestamp from the Swagger contract', async () => {

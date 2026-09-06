@@ -2,7 +2,11 @@ import { getConversations } from '../conversations-api'
 
 describe('getConversations', () => {
   afterEach(() => {
-    delete global.fetch
+    Object.defineProperty(global, 'fetch', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    })
   })
 
   it('requests the Swagger endpoint and sorts conversations by recency', async () => {

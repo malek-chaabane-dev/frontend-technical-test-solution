@@ -13,7 +13,11 @@ function message(id: number, conversationId: number) {
 
 describe('useConversationMessages', () => {
   afterEach(() => {
-    delete global.fetch
+    Object.defineProperty(global, 'fetch', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    })
   })
 
   it('ignores a stale response after changing conversation', async () => {
