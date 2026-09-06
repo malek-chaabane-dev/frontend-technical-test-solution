@@ -60,7 +60,7 @@ export async function createConversation(
   const response = await postJson<unknown>(
     API_PATHS.conversations(userId),
     { recipientId },
-    MESSAGING_TEXT.common.resources.conversation,
+    'conversation',
   )
 
   if (!isCreatedConversationResponse(response)) {

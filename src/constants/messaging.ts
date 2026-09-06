@@ -8,10 +8,6 @@ export const MESSAGING_TEXT = {
     retry: 'Try again',
     create: 'Create',
     creating: 'Creating...',
-    resources: {
-      message: 'The message',
-      conversation: 'The conversation',
-    },
   },
   header: {
     brandName: 'Leboncoin',
