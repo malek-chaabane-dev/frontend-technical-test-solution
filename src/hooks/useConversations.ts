@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { getConversations } from '../services/conversations-api'
 import { isAbortError } from '../services/api-client'
 import type { Conversation } from '../types/conversation'
+import type { AsyncState } from '../types/api'
 
 type UseConversationsResult = {
   conversations: Conversation[]
@@ -11,9 +12,11 @@ type UseConversationsResult = {
 }
 
 export function useConversations(userId: number): UseConversationsResult {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [state, setState] = useState<AsyncState<Conversation[]>>({
+    status: 'loading',
+    data: [],
+    error: null,
+  })
   const [requestKey, setRequestKey] = useState(0)
 
   const retry = useCallback(() => {
@@ -23,32 +26,42 @@ export function useConversations(userId: number): UseConversationsResult {
   useEffect(() => {
     const controller = new AbortController()
 
-    setIsLoading(true)
-    setError(null)
+    setState((currentState) => ({ ...currentState, status: 'loading', error: null }))
 
     getConversations(userId, controller.signal)
       .then((nextConversations) => {
-        setConversations(nextConversations)
+        setState({ status: 'success', data: nextConversations, error: null })
       })
       .catch((requestError: unknown) => {
         if (isAbortError(requestError)) {
           return
         }
 
-        setError(
-          requestError instanceof Error
-            ? requestError
-            : new Error('Le chargement des conversations a échoué.'),
-        )
+        setState((currentState) => ({
+          ...currentState,
+          status: 'error',
+          error:
+            requestError instanceof Error
+              ? requestError
+              : new Error('Le chargement des conversations a échoué.'),
+        }))
       })
       .finally(() => {
         if (!controller.signal.aborted) {
-          setIsLoading(false)
+          setState((currentState) => ({
+            ...currentState,
+            status: currentState.error ? 'error' : 'success',
+          }))
         }
       })
 
     return () => controller.abort()
   }, [requestKey, userId])
 
-  return { conversations, isLoading, error, retry }
+  return {
+    conversations: state.data,
+    isLoading: state.status === 'loading',
+    error: state.error,
+    retry,
+  }
 }

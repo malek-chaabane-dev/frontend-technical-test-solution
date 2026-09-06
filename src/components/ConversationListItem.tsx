@@ -2,13 +2,7 @@ import {
   formatConversationTimestamp,
   getConversationPartner,
 } from '../utils/conversation-utils'
-import type { Conversation } from '../types/conversation'
-
-type ConversationListItemProps = {
-  conversation: Conversation
-  loggedUserId: number
-  onSelect: (conversationId: number) => void
-}
+import type { ConversationListItemProps } from '../types/ui'
 
 export function ConversationListItem({
   conversation,

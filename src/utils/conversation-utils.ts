@@ -15,3 +15,18 @@ export function formatConversationTimestamp(timestamp: number): string {
     timeStyle: 'short',
   }).format(new Date(timestamp * 1000))
 }
+
+export function findConversationWithUser(
+  conversations: Conversation[],
+  loggedUserId: number,
+  recipientId: number,
+): Conversation | undefined {
+  return conversations.find((conversation) => {
+    const otherUserId =
+      conversation.senderId === loggedUserId
+        ? conversation.recipientId
+        : conversation.senderId
+
+    return otherUserId === recipientId
+  })
+}

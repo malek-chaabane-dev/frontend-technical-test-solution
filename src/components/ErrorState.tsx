@@ -1,7 +1,4 @@
-type ErrorStateProps = {
-  onRetry: () => void
-  message?: string
-}
+import type { ErrorStateProps } from '../types/ui'
 
 export function ErrorState({
   onRetry,

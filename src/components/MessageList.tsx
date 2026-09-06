@@ -2,15 +2,7 @@ import { EmptyState } from './EmptyState'
 import { ErrorState } from './ErrorState'
 import { LoadingState } from './LoadingState'
 import { MessageBubble } from './MessageBubble'
-import type { Message } from '../types/message'
-
-type MessageListProps = {
-  messages: Message[]
-  loggedUserId: number
-  isLoading: boolean
-  error: Error | null
-  onRetry: () => void
-}
+import type { MessageListProps } from '../types/ui'
 
 export function MessageList({
   messages,

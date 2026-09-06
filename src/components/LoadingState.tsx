@@ -1,6 +1,4 @@
-type LoadingStateProps = {
-  label: string
-}
+import type { LoadingStateProps } from '../types/ui'
 
 export function LoadingState({ label }: LoadingStateProps) {
   return (

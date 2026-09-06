@@ -1,7 +1,4 @@
-type EmptyStateProps = {
-  title: string
-  description: string
-}
+import type { EmptyStateProps } from '../types/ui'
 
 export function EmptyState({ title, description }: EmptyStateProps) {
   return (

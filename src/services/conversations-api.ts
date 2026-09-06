@@ -1,5 +1,6 @@
 import { createValidationError, getJson, postJson } from './api-client'
 import type { Conversation } from '../types/conversation'
+import { API_PATHS } from '../constants/api'
 
 function isConversation(value: unknown): value is Conversation {
   if (typeof value !== 'object' || value === null) {
@@ -30,7 +31,7 @@ export async function getConversations(
   }
 
   const response = await getJson<unknown>(
-    `/conversations/${encodeURIComponent(String(userId))}`,
+    API_PATHS.conversations(userId),
     signal,
   )
 
@@ -56,7 +57,7 @@ export async function createConversation(
   }
 
   const response = await postJson<unknown>(
-    `/conversations/${encodeURIComponent(String(userId))}`,
+    API_PATHS.conversations(userId),
     { recipientId },
     'La conversation',
   )

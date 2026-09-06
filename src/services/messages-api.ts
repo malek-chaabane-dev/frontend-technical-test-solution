@@ -1,5 +1,6 @@
 import { createValidationError, getJson, postJson } from './api-client'
 import type { Message } from '../types/message'
+import { API_PATHS } from '../constants/api'
 
 type RawMessage = Omit<Message, 'timestamp'> & {
   timestamp: string | number
@@ -31,7 +32,7 @@ export async function getMessages(
   }
 
   const response = await getJson<unknown>(
-    `/messages/${encodeURIComponent(String(conversationId))}`,
+    API_PATHS.messages(conversationId),
     signal,
   )
 
@@ -102,7 +103,7 @@ export async function sendMessage(
   }
 
   const response = await postJson<unknown>(
-    `/messages/${encodeURIComponent(String(conversationId))}`,
+    API_PATHS.messages(conversationId),
     { body, timestamp },
   )
 

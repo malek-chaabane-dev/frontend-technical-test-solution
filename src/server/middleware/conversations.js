@@ -1,52 +1,37 @@
-const fs = require('fs')
-const path = require('path')
+const { readDatabase } = require('./database')
+const {
+  enrichCreatedConversation,
+  sendUserConversations,
+} = require('./conversation-handlers')
+const { enrichCreatedMessage } = require('./message-handlers')
 
-function readDatabase() {
-  return JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../db.json'), 'utf8')
-  )
+function isConversationRequest(req) {
+  return req.url.includes('/conversations')
 }
 
-// Need this middleware to catch some requests
-// and return both conversations where userId is sender or recipient
+function isMessageRequest(req) {
+  return req.url.includes('/messages')
+}
+
 module.exports = (req, res, next) => {
-  const db = readDatabase()
+  const database = readDatabase()
 
-  if (/conversations/.test(req.url) && req.method === 'POST') {
-    const senderId = Number(req.query?.senderId)
-    const recipientId = Number(req.body?.recipientId)
-    const sender = db?.users?.find(user => user.id === senderId)
-    const recipient = db?.users?.find(user => user.id === recipientId)
-
-    if (!sender || !recipient) {
-      res.status(400).json({ error: 'Invalid conversation recipient' })
+  if (isConversationRequest(req) && req.method === 'POST') {
+    if (!enrichCreatedConversation(req, res, database)) {
       return
     }
 
-    req.body.senderId = sender.id
-    req.body.senderNickname = sender.nickname
-    req.body.recipientId = recipient.id
-    req.body.recipientNickname = recipient.nickname
-    req.body.lastMessageTimestamp = Math.floor(Date.now() / 1000)
-  }
-
-  if (/messages/.test(req.url) && req.method === 'POST') {
-    const conversationId = Number(req.query?.conversationId)
-
-    if (Number.isInteger(conversationId) && req.body) {
-      req.body.conversationId = conversationId
-      req.body.authorId = 1
-    }
-  }
-
-  if (/conversations/.test(req.url) && req.method === 'GET') {
-    const userId = req.query?.senderId
-    const result = db?.conversations?.filter(
-      conv => conv.senderId == userId || conv.recipientId == userId
-    )
-
-    res.status(200).json(result)
+    next()
     return
+  }
+
+  if (isConversationRequest(req) && req.method === 'GET') {
+    sendUserConversations(req, res, database)
+    return
+  }
+
+  if (isMessageRequest(req) && req.method === 'POST') {
+    enrichCreatedMessage(req)
   }
 
   next()

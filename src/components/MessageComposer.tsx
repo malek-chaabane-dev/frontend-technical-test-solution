@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
-
-type MessageComposerProps = {
-  disabled: boolean
-  onSubmit: (body: string) => Promise<void>
-}
+import type { MessageComposerProps } from '../types/ui'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 export function MessageComposer({ disabled, onSubmit }: MessageComposerProps) {
   const [body, setBody] = useState('')
@@ -59,7 +56,7 @@ export function MessageComposer({ disabled, onSubmit }: MessageComposerProps) {
           value={body}
           onChange={(event) => setBody(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Écrire un message"
+          placeholder={MESSAGING_TEXT.composePlaceholder}
           rows={1}
           disabled={isDisabled}
           className="min-h-10 min-w-0 flex-1 resize-y rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-brand focus:ring-2 focus:ring-orange-100 disabled:bg-zinc-100"

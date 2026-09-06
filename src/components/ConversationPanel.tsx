@@ -1,19 +1,7 @@
 import { EmptyState } from './EmptyState'
 import { MessageList } from './MessageList'
-import type { Message } from '../types/message'
 import { MessageComposer } from './MessageComposer'
-
-type ConversationPanelProps = {
-  selectedConversationId: number | null
-  partnerName: string | null
-  loggedUserId: number
-  messages: Message[]
-  isLoading: boolean
-  error: Error | null
-  onRetry: () => void
-  onSendMessage: (body: string) => Promise<void>
-  onBack: () => void
-}
+import type { ConversationPanelProps } from '../types/ui'
 
 export function ConversationPanel({
   selectedConversationId,

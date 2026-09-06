@@ -1,9 +1,4 @@
-import type { Message } from '../types/message'
-
-type MessageBubbleProps = {
-  message: Message
-  isMine: boolean
-}
+import type { MessageBubbleProps } from '../types/ui'
 
 function formatMessageTimestamp(timestamp: string): string {
   const numericTimestamp = Number(timestamp)

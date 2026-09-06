@@ -1,14 +1,6 @@
 import type { FormEvent } from 'react'
-import type { User } from '../types/user'
-
-type NewConversationDialogProps = {
-  users: User[]
-  isLoadingUsers: boolean
-  isSubmitting: boolean
-  error: string | null
-  onClose: () => void
-  onSubmit: (recipientId: number) => Promise<void>
-}
+import type { NewConversationDialogProps } from '../types/ui'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 export function NewConversationDialog({
   users,
@@ -40,7 +32,7 @@ export function NewConversationDialog({
       >
         <div className="flex items-start justify-between gap-4">
           <h2 id="new-conversation-title" className="text-lg font-semibold text-zinc-900">
-            Nouvelle conversation
+            {MESSAGING_TEXT.newConversation}
           </h2>
           <button
             type="button"

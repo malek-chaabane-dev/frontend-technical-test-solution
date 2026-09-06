@@ -2,16 +2,7 @@ import { EmptyState } from './EmptyState'
 import { ErrorState } from './ErrorState'
 import { LoadingState } from './LoadingState'
 import { ConversationListItem } from './ConversationListItem'
-import type { Conversation } from '../types/conversation'
-
-type ConversationListProps = {
-  conversations: Conversation[]
-  loggedUserId: number
-  isLoading: boolean
-  error: Error | null
-  onRetry: () => void
-  onSelect: (conversationId: number) => void
-}
+import type { ConversationListProps } from '../types/ui'
 
 export function ConversationList({
   conversations,
