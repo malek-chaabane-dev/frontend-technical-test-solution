@@ -31,7 +31,7 @@ export function ConversationList({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isLoading ? <LoadingState label="Chargement des conversations..." /> : null}
-        {!isLoading && error ? <ErrorState onRetry={onRetry} /> : null}
+        {!isLoading && error ? <ErrorState message={error.message} onRetry={onRetry} /> : null}
         {!isLoading && !error && conversations.length === 0 ? (
           <EmptyState
             title="Aucune conversation"

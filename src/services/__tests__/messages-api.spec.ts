@@ -44,4 +44,21 @@ describe('getMessages', () => {
 
     await expect(getMessages(1)).rejects.toThrow('La réponse des messages est invalide.')
   })
+
+  it('rejects a message with an invalid timestamp', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          id: 1,
+          conversationId: 1,
+          authorId: 1,
+          timestamp: 'not-a-date',
+          body: 'Bonjour',
+        },
+      ],
+    } as Response)
+
+    await expect(getMessages(1)).rejects.toThrow('Le timestamp du message est invalide.')
+  })
 })

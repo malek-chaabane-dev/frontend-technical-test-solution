@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getMessages } from '../services/messages-api'
+import { isAbortError } from '../services/api-client'
 import type { Message } from '../types/message'
 
 type UseConversationMessagesResult = {
@@ -47,7 +48,7 @@ export function useConversationMessages(
     getMessages(conversationId, controller.signal)
       .then(setMessages)
       .catch((requestError: unknown) => {
-        if (requestError instanceof DOMException && requestError.name === 'AbortError') {
+        if (isAbortError(requestError)) {
           return
         }
 

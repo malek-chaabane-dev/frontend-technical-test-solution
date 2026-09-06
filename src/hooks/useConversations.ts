@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getConversations } from '../services/conversations-api'
+import { isAbortError } from '../services/api-client'
 import type { Conversation } from '../types/conversation'
 
 type UseConversationsResult = {
@@ -30,7 +31,7 @@ export function useConversations(userId: number): UseConversationsResult {
         setConversations(nextConversations)
       })
       .catch((requestError: unknown) => {
-        if (requestError instanceof DOMException && requestError.name === 'AbortError') {
+        if (isAbortError(requestError)) {
           return
         }
 

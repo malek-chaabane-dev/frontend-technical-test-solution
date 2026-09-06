@@ -219,4 +219,21 @@ describe('Home messaging shell', () => {
     await waitFor(() => expect(postRequest).toHaveBeenCalledTimes(1))
     await waitFor(() => expect(screen.queryByDisplayValue('Bonjour')).not.toBeInTheDocument())
   })
+
+  it('retries a failed conversation load successfully', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 503 })
+      .mockResolvedValueOnce({ ok: true, json: async () => [] })
+    global.fetch = fetchMock as typeof fetch
+
+    render(<Home />)
+
+    expect(await screen.findByText('Le service est temporairement indisponible.'))
+      .toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+
+    await waitFor(() => expect(screen.getByText('Aucune conversation')).toBeInTheDocument())
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
 })

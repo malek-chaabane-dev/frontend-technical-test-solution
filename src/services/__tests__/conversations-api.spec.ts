@@ -48,4 +48,14 @@ describe('getConversations', () => {
       'La réponse des conversations est invalide.',
     )
   })
+
+  it('does not call the API for an invalid user id', async () => {
+    const fetchMock = jest.fn()
+    global.fetch = fetchMock
+
+    await expect(getConversations(0)).rejects.toThrow(
+      "L’identifiant utilisateur est invalide.",
+    )
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })

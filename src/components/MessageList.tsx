@@ -24,7 +24,7 @@ export function MessageList({
   }
 
   if (error) {
-    return <ErrorState onRetry={onRetry} />
+    return <ErrorState message={error.message} onRetry={onRetry} />
   }
 
   if (messages.length === 0) {

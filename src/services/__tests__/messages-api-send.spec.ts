@@ -37,4 +37,14 @@ describe('sendMessage', () => {
       "La réponse de création du message est invalide.",
     )
   })
+
+  it('rejects an empty body before calling the API', async () => {
+    const fetchMock = jest.fn()
+    global.fetch = fetchMock
+
+    await expect(sendMessage(7, 1, '   ', 123)).rejects.toThrow(
+      'Le contenu du message est invalide.',
+    )
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })
