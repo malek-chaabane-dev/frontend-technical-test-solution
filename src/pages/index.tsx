@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Logo from '../assets/lbc-logo.webp'
 import { ConversationList } from '../components/ConversationList'
 import { ConversationPanel } from '../components/ConversationPanel'
+import { useConversations } from '../hooks/useConversations'
+import { getLoggedUserId } from '../utils/getLoggedUserId'
 
 export default function Home(): ReactElement {
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(
@@ -12,6 +14,8 @@ export default function Home(): ReactElement {
   )
 
   const isConversationOpen = selectedConversationId !== null
+  const loggedUserId = getLoggedUserId()
+  const { conversations, isLoading, error, retry } = useConversations(loggedUserId)
 
   return (
     <>
@@ -42,7 +46,14 @@ export default function Home(): ReactElement {
               isConversationOpen ? 'hidden md:flex' : 'flex'
             } flex-col`}
           >
-            <ConversationList />
+            <ConversationList
+              conversations={conversations}
+              loggedUserId={loggedUserId}
+              isLoading={isLoading}
+              error={error}
+              onRetry={retry}
+              onSelect={setSelectedConversationId}
+            />
           </div>
           <div
             className={`h-full min-h-0 min-w-0 flex-1 flex-col ${
