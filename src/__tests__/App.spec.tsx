@@ -348,4 +348,65 @@ describe('Home messaging shell', () => {
     expect(screen.getByText('Conversations')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Retour' })).not.toBeInTheDocument()
   })
+
+  it('creates and selects a new conversation', async () => {
+    let conversationRefreshCount = 0
+    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+
+      if (url.endsWith('/conversations/1') && init?.method === 'POST') {
+        return Promise.resolve({ ok: true, json: async () => ({ id: 12 }) })
+      }
+
+      if (url.endsWith('/conversations/1')) {
+        conversationRefreshCount += 1
+        return Promise.resolve({
+          ok: true,
+          json: async () =>
+            conversationRefreshCount > 1
+              ? [
+                  {
+                    id: 12,
+                    senderId: 1,
+                    senderNickname: 'Thibaut',
+                    recipientId: 2,
+                    recipientNickname: 'Jeremie',
+                    lastMessageTimestamp: 10,
+                  },
+                ]
+              : [],
+        })
+      }
+
+      if (url.endsWith('/users')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            { id: 1, nickname: 'Thibaut', token: 'token' },
+            { id: 2, nickname: 'Jeremie', token: 'token' },
+          ],
+        })
+      }
+
+      return Promise.resolve({ ok: true, json: async () => [] })
+    })
+    global.fetch = fetchMock as typeof fetch
+
+    render(<Home />)
+    fireEvent.click(screen.getByRole('button', { name: 'Nouvelle conversation' }))
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    fireEvent.change(await screen.findByLabelText('Destinataire'), {
+      target: { value: '2' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Créer' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(fetchMock).toHaveBeenCalledWith('http://localhost:3005/conversations/1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipientId: 2 }),
+    })
+    expect(await screen.findByRole('heading', { name: 'Jeremie' })).toBeInTheDocument()
+  })
 })

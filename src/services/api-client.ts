@@ -61,7 +61,11 @@ export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T>
   }
 }
 
-export async function postJson<T>(path: string, body: unknown): Promise<T> {
+export async function postJson<T>(
+  path: string,
+  body: unknown,
+  resourceName = 'Le message',
+): Promise<T> {
   let response: Response
 
   try {
@@ -79,10 +83,10 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   if (!response.ok) {
     throw new ApiError(
       response.status === 400
-        ? 'Le message est invalide.'
+        ? `${resourceName} est invalide.`
         : response.status === 503
           ? 'Le service est temporairement indisponible.'
-          : 'Le message n\'a pas pu être envoyé.',
+          : `${resourceName} n\'a pas pu être créé.`,
       response.status,
     )
   }
