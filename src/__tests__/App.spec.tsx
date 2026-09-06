@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import Home from '../pages'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 describe('Home messaging shell', () => {
   beforeEach(() => {
@@ -13,19 +14,21 @@ describe('Home messaging shell', () => {
     render(<Home />)
 
     expect(screen.getByRole('banner')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Messages' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: MESSAGING_TEXT.header.pageTitle })).toBeInTheDocument()
     expect(
-      screen.getByRole('navigation', { name: 'Conversations' }),
+      screen.getByRole('navigation', { name: MESSAGING_TEXT.conversations.navigationLabel }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Conversation' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('region', { name: MESSAGING_TEXT.conversations.itemLabel }),
+    ).toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Chargement des conversations...',
+      MESSAGING_TEXT.common.loading,
     )
 
     return waitFor(() => {
-      expect(screen.getByText('Aucune conversation')).toBeInTheDocument()
+      expect(screen.getByText(MESSAGING_TEXT.conversations.emptyTitle)).toBeInTheDocument()
       expect(
-        screen.getByText('Aucune conversation sélectionnée'),
+        screen.getByText(MESSAGING_TEXT.conversations.selectedTitle),
       ).toBeInTheDocument()
     })
 
@@ -81,8 +84,8 @@ describe('Home messaging shell', () => {
     expect(await screen.findByText('Bonjour')).toBeInTheDocument()
     expect(screen.getByText('Bonjour Jeremie')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Jeremie' })).toBeInTheDocument()
-    expect(screen.getByRole('article', { name: 'Message envoyé' })).toBeInTheDocument()
-    expect(screen.getByRole('article', { name: 'Message reçu' })).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: MESSAGING_TEXT.messages.sentLabel })).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: MESSAGING_TEXT.messages.receivedLabel })).toBeInTheDocument()
     expect(global.fetch).toHaveBeenCalledWith('http://localhost:3005/messages/1', {
       signal: expect.any(AbortSignal),
     })
@@ -124,19 +127,19 @@ describe('Home messaging shell', () => {
     render(<Home />)
     fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
 
-    const input = await screen.findByLabelText('Votre message')
+    const input = await screen.findByLabelText(MESSAGING_TEXT.messages.composerLabel)
     await waitFor(() => expect(input).toBeEnabled())
     fireEvent.change(input, { target: { value: 'Bonjour' } })
     fireEvent.submit(input.closest('form') as HTMLFormElement)
 
-    expect(screen.getByRole('button', { name: 'Envoi...' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: MESSAGING_TEXT.messages.sending })).toBeDisabled()
     expect(screen.getByDisplayValue('Bonjour')).toBeInTheDocument()
 
     await act(async () => {
       resolveSend?.({ ok: true, json: async () => ({ id: 3 }) } as Response)
     })
     await waitFor(() => expect(screen.queryByDisplayValue('Bonjour')).not.toBeInTheDocument())
-    expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: MESSAGING_TEXT.messages.send })).toBeDisabled()
     expect(screen.getByText('Bonjour')).toBeInTheDocument()
   })
 
@@ -170,7 +173,7 @@ describe('Home messaging shell', () => {
     render(<Home />)
     fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
 
-    const input = await screen.findByLabelText('Votre message')
+    const input = await screen.findByLabelText(MESSAGING_TEXT.messages.composerLabel)
     await waitFor(() => expect(input).toBeEnabled())
     fireEvent.change(input, { target: { value: 'Message à conserver' } })
     fireEvent.submit(input.closest('form') as HTMLFormElement)
@@ -213,7 +216,7 @@ describe('Home messaging shell', () => {
 
     render(<Home />)
     fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
-    const input = await screen.findByLabelText('Votre message')
+    const input = await screen.findByLabelText(MESSAGING_TEXT.messages.composerLabel)
     await waitFor(() => expect(input).toBeEnabled())
     fireEvent.change(input, { target: { value: 'Bonjour' } })
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
@@ -246,11 +249,11 @@ describe('Home messaging shell', () => {
 
     render(<Home />)
     fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
-    const input = await screen.findByLabelText('Votre message')
+    const input = await screen.findByLabelText(MESSAGING_TEXT.messages.composerLabel)
     await waitFor(() => expect(input).toBeEnabled())
     fireEvent.change(input, { target: { value: '   ' } })
 
-    expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: MESSAGING_TEXT.messages.send })).toBeDisabled()
     fireEvent.submit(input.closest('form') as HTMLFormElement)
 
     expect(fetchMock).not.toHaveBeenCalledWith(
@@ -292,7 +295,7 @@ describe('Home messaging shell', () => {
 
     render(<Home />)
     fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
-    const input = await screen.findByLabelText('Votre message')
+    const input = await screen.findByLabelText(MESSAGING_TEXT.messages.composerLabel)
     await waitFor(() => expect(input).toBeEnabled())
     fireEvent.change(input, { target: { value: 'Bonjour' } })
     const form = input.closest('form') as HTMLFormElement
@@ -317,11 +320,11 @@ describe('Home messaging shell', () => {
 
     render(<Home />)
 
-    expect(await screen.findByText('Le service est temporairement indisponible.'))
+    expect(await screen.findByText(MESSAGING_TEXT.errors.serviceUnavailable))
       .toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+    fireEvent.click(screen.getByRole('button', { name: MESSAGING_TEXT.common.retry }))
 
-    await waitFor(() => expect(screen.getByText('Aucune conversation')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(MESSAGING_TEXT.conversations.emptyTitle)).toBeInTheDocument())
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
@@ -343,10 +346,10 @@ describe('Home messaging shell', () => {
     render(<Home />)
     fireEvent.click(await screen.findByRole('button', { name: /Jeremie/ }))
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Retour' }))
+    fireEvent.click(await screen.findByRole('button', { name: MESSAGING_TEXT.conversations.back }))
 
-    expect(screen.getByText('Conversations')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Retour' })).not.toBeInTheDocument()
+    expect(screen.getByText(MESSAGING_TEXT.conversations.title)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: MESSAGING_TEXT.conversations.back })).not.toBeInTheDocument()
   })
 
   it('creates and selects a new conversation', async () => {
@@ -393,13 +396,13 @@ describe('Home messaging shell', () => {
     global.fetch = fetchMock as typeof fetch
 
     render(<Home />)
-    fireEvent.click(screen.getByRole('button', { name: 'Nouvelle conversation' }))
+    fireEvent.click(screen.getByRole('button', { name: MESSAGING_TEXT.header.newConversation }))
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument()
-    fireEvent.change(await screen.findByLabelText('Destinataire'), {
+    fireEvent.change(await screen.findByLabelText(MESSAGING_TEXT.newConversation.recipientLabel), {
       target: { value: '2' },
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Créer' }))
+    fireEvent.click(screen.getByRole('button', { name: MESSAGING_TEXT.common.create }))
 
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(fetchMock).toHaveBeenCalledWith('http://localhost:3005/conversations/1', {

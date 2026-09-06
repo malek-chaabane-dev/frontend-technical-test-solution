@@ -1,4 +1,5 @@
 import { getMessages } from '../messages-api'
+import { MESSAGING_TEXT } from '../../constants/messaging'
 
 describe('getMessages', () => {
   afterEach(() => {
@@ -46,7 +47,7 @@ describe('getMessages', () => {
       json: async () => [{ id: 1 }],
     } as Response)
 
-    await expect(getMessages(1)).rejects.toThrow('La réponse des messages est invalide.')
+    await expect(getMessages(1)).rejects.toThrow(MESSAGING_TEXT.errors.invalidMessagesResponse)
   })
 
   it('rejects a message with an invalid timestamp', async () => {
@@ -63,6 +64,6 @@ describe('getMessages', () => {
       ],
     } as Response)
 
-    await expect(getMessages(1)).rejects.toThrow('Le timestamp du message est invalide.')
+    await expect(getMessages(1)).rejects.toThrow(MESSAGING_TEXT.errors.invalidTimestamp)
   })
 })

@@ -1,6 +1,7 @@
 import { createValidationError, getJson, postJson } from './api-client'
 import type { Message } from '../types/message'
 import { API_PATHS } from '../constants/api'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 type RawMessage = Omit<Message, 'timestamp'> & {
   timestamp: string | number
@@ -28,7 +29,7 @@ export async function getMessages(
   signal?: AbortSignal,
 ): Promise<Message[]> {
   if (!Number.isInteger(conversationId) || conversationId <= 0) {
-    throw createValidationError('L’identifiant de conversation est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidConversationId)
   }
 
   const response = await getJson<unknown>(
@@ -37,7 +38,7 @@ export async function getMessages(
   )
 
   if (!Array.isArray(response) || !response.every(isMessage)) {
-    throw createValidationError('La réponse des messages est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidMessagesResponse)
   }
 
   return response
@@ -66,7 +67,7 @@ function toTimestamp(timestamp: string): number {
   const parsedTimestamp = Date.parse(timestamp)
 
   if (!Number.isFinite(parsedTimestamp)) {
-    throw createValidationError('Le timestamp du message est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidTimestamp)
   }
 
   return parsedTimestamp
@@ -91,15 +92,15 @@ export async function sendMessage(
   timestamp: number,
 ): Promise<Message> {
   if (!Number.isInteger(conversationId) || conversationId <= 0) {
-    throw createValidationError('L’identifiant de conversation est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidConversationId)
   }
 
   if (!Number.isInteger(authorId) || authorId <= 0) {
-    throw createValidationError('L’identifiant auteur est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidAuthorId)
   }
 
   if (body.trim() === '' || !Number.isInteger(timestamp) || timestamp < 0) {
-    throw createValidationError('Le contenu du message est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidMessageContent)
   }
 
   const response = await postJson<unknown>(
@@ -108,7 +109,7 @@ export async function sendMessage(
   )
 
   if (!isCreateMessageResponse(response)) {
-    throw createValidationError("La réponse de création du message est invalide.")
+    throw createValidationError(MESSAGING_TEXT.errors.invalidMessageCreationResponse)
   }
 
   return {

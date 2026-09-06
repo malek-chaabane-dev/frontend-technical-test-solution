@@ -1,4 +1,5 @@
 import { sendMessage } from '../messages-api'
+import { MESSAGING_TEXT } from '../../constants/messaging'
 
 describe('sendMessage', () => {
   afterEach(() => {
@@ -38,7 +39,7 @@ describe('sendMessage', () => {
     } as Response)
 
     await expect(sendMessage(7, 1, 'Bonjour', 123)).rejects.toThrow(
-      "La réponse de création du message est invalide.",
+      MESSAGING_TEXT.errors.invalidMessageCreationResponse,
     )
   })
 
@@ -47,7 +48,7 @@ describe('sendMessage', () => {
     global.fetch = fetchMock
 
     await expect(sendMessage(7, 1, '   ', 123)).rejects.toThrow(
-      'Le contenu du message est invalide.',
+      MESSAGING_TEXT.errors.invalidMessageContent,
     )
     expect(fetchMock).not.toHaveBeenCalled()
   })

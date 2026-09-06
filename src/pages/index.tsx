@@ -74,10 +74,10 @@ export default function Home(): ReactElement {
   return (
     <>
       <Head>
-        <title>Messages - Leboncoin</title>
+        <title>{`${MESSAGING_TEXT.header.pageTitle} - ${MESSAGING_TEXT.header.brandName}`}</title>
         <meta
           name="description"
-          content="Messagerie Leboncoin : consultez et répondez à vos conversations."
+          content={MESSAGING_TEXT.header.pageDescription}
         />
       </Head>
 
@@ -85,13 +85,13 @@ export default function Home(): ReactElement {
         <header className="flex shrink-0 items-center gap-3 border-b border-zinc-200 px-4 py-2.5">
           <Image
             src={Logo}
-            alt="Leboncoin"
+            alt={MESSAGING_TEXT.header.brandName}
             width={120}
             height={38}
             priority
             className="h-8 w-auto"
           />
-          <h1 className="text-lg font-semibold text-zinc-900">Messages</h1>
+          <h1 className="text-lg font-semibold text-zinc-900">{MESSAGING_TEXT.header.pageTitle}</h1>
           <button
             type="button"
             onClick={() => {
@@ -100,7 +100,7 @@ export default function Home(): ReactElement {
             }}
             className="ml-auto rounded-md bg-brand px-3 py-2 text-sm font-semibold text-white hover:bg-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
-            {MESSAGING_TEXT.newConversation}
+            {MESSAGING_TEXT.header.newConversation}
           </button>
         </header>
 

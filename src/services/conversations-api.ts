@@ -1,6 +1,7 @@
 import { createValidationError, getJson, postJson } from './api-client'
 import type { Conversation } from '../types/conversation'
 import { API_PATHS } from '../constants/api'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 function isConversation(value: unknown): value is Conversation {
   if (typeof value !== 'object' || value === null) {
@@ -27,7 +28,7 @@ export async function getConversations(
   signal?: AbortSignal,
 ): Promise<Conversation[]> {
   if (!Number.isInteger(userId) || userId <= 0) {
-    throw createValidationError('L’identifiant utilisateur est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidUserId)
   }
 
   const response = await getJson<unknown>(
@@ -36,7 +37,7 @@ export async function getConversations(
   )
 
   if (!Array.isArray(response) || !response.every(isConversation)) {
-    throw createValidationError('La réponse des conversations est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidConversationsResponse)
   }
 
   return [...response].sort(
@@ -49,21 +50,21 @@ export async function createConversation(
   recipientId: number,
 ): Promise<number> {
   if (!Number.isInteger(userId) || userId <= 0) {
-    throw createValidationError('L’identifiant utilisateur est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidUserId)
   }
 
   if (!Number.isInteger(recipientId) || recipientId <= 0) {
-    throw createValidationError('Le destinataire est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidRecipient)
   }
 
   const response = await postJson<unknown>(
     API_PATHS.conversations(userId),
     { recipientId },
-    'La conversation',
+    MESSAGING_TEXT.common.resources.conversation,
   )
 
   if (!isCreatedConversationResponse(response)) {
-    throw createValidationError('La réponse de création de conversation est invalide.')
+    throw createValidationError(MESSAGING_TEXT.errors.invalidConversationCreationResponse)
   }
 
   return response.id

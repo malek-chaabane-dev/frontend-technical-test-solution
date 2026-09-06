@@ -3,6 +3,7 @@ import { ErrorState } from './ErrorState'
 import { LoadingState } from './LoadingState'
 import { ConversationListItem } from './ConversationListItem'
 import type { ConversationListProps } from '../types/ui'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 export function ConversationList({
   conversations,
@@ -14,19 +15,19 @@ export function ConversationList({
 }: ConversationListProps) {
   return (
     <nav
-      aria-label="Conversations"
+      aria-label={MESSAGING_TEXT.conversations.navigationLabel}
       className="flex h-full min-h-0 flex-col border-zinc-200 bg-white md:border-r"
     >
       <div className="shrink-0 border-b border-zinc-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-zinc-900">Conversations</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">{MESSAGING_TEXT.conversations.title}</h2>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {isLoading ? <LoadingState label="Chargement des conversations..." /> : null}
+        {isLoading ? <LoadingState label={MESSAGING_TEXT.common.loading} /> : null}
         {!isLoading && error ? <ErrorState message={error.message} onRetry={onRetry} /> : null}
         {!isLoading && !error && conversations.length === 0 ? (
           <EmptyState
-            title="Aucune conversation"
-            description="Vous n'avez aucune conversation pour le moment."
+            title={MESSAGING_TEXT.conversations.emptyTitle}
+            description={MESSAGING_TEXT.conversations.emptyDescription}
           />
         ) : null}
         {!isLoading && !error && conversations.length > 0 ? (

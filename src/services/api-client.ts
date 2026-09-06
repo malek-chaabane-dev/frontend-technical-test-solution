@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from '../utils/getApiBaseUrl'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 export class ApiError extends Error {
   status: number | null
@@ -23,18 +24,18 @@ export function createValidationError(message: string): ApiError {
 
 function getHttpErrorMessage(status: number): string {
   if (status === 400) {
-    return 'La requête est invalide.'
+    return MESSAGING_TEXT.errors.invalidRequest
   }
 
   if (status === 404) {
-    return 'La ressource demandée est introuvable.'
+    return MESSAGING_TEXT.errors.resourceNotFound
   }
 
   if (status === 503) {
-    return 'Le service est temporairement indisponible.'
+    return MESSAGING_TEXT.errors.serviceUnavailable
   }
 
-  return 'Le service a rencontré un problème.'
+  return MESSAGING_TEXT.errors.serviceFailure
 }
 
 export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
@@ -47,7 +48,7 @@ export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T>
       throw error
     }
 
-    throw new ApiError('La connexion au service est indisponible.')
+    throw new ApiError(MESSAGING_TEXT.errors.connectionUnavailable)
   }
 
   if (!response.ok) {
@@ -57,14 +58,14 @@ export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T>
   try {
     return (await response.json()) as T
   } catch {
-    throw new ApiError('La réponse du service est invalide.', response.status)
+    throw new ApiError(MESSAGING_TEXT.errors.invalidResponse, response.status)
   }
 }
 
 export async function postJson<T>(
   path: string,
   body: unknown,
-  resourceName = 'Le message',
+  resourceName: string = MESSAGING_TEXT.common.resources.message,
 ): Promise<T> {
   let response: Response
 
@@ -77,16 +78,20 @@ export async function postJson<T>(
       body: JSON.stringify(body),
     })
   } catch {
-    throw new ApiError('La connexion au service est indisponible.')
+    throw new ApiError(MESSAGING_TEXT.errors.connectionUnavailable)
   }
 
   if (!response.ok) {
     throw new ApiError(
       response.status === 400
-        ? `${resourceName} est invalide.`
+        ? resourceName === MESSAGING_TEXT.common.resources.conversation
+          ? MESSAGING_TEXT.errors.invalidConversation
+          : MESSAGING_TEXT.errors.invalidMessage
         : response.status === 503
-          ? 'Le service est temporairement indisponible.'
-          : `${resourceName} n\'a pas pu être créé.`,
+          ? MESSAGING_TEXT.errors.serviceUnavailable
+          : resourceName === MESSAGING_TEXT.common.resources.conversation
+            ? MESSAGING_TEXT.errors.conversationNotCreated
+            : MESSAGING_TEXT.errors.messageNotCreated,
       response.status,
     )
   }
@@ -94,6 +99,6 @@ export async function postJson<T>(
   try {
     return (await response.json()) as T
   } catch {
-    throw new ApiError('La réponse du service est invalide.', response.status)
+    throw new ApiError(MESSAGING_TEXT.errors.invalidResponse, response.status)
   }
 }

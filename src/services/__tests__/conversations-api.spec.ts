@@ -1,4 +1,5 @@
 import { getConversations } from '../conversations-api'
+import { MESSAGING_TEXT } from '../../constants/messaging'
 
 describe('getConversations', () => {
   afterEach(() => {
@@ -49,7 +50,7 @@ describe('getConversations', () => {
     } as Response)
 
     await expect(getConversations(1)).rejects.toThrow(
-      'La réponse des conversations est invalide.',
+      MESSAGING_TEXT.errors.invalidConversationsResponse,
     )
   })
 
@@ -58,7 +59,7 @@ describe('getConversations', () => {
     global.fetch = fetchMock
 
     await expect(getConversations(0)).rejects.toThrow(
-      "L’identifiant utilisateur est invalide.",
+      MESSAGING_TEXT.errors.invalidUserId,
     )
     expect(fetchMock).not.toHaveBeenCalled()
   })

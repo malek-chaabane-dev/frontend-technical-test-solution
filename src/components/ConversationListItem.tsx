@@ -3,6 +3,7 @@ import {
   getConversationPartner,
 } from '../utils/conversation-utils'
 import type { ConversationListItemProps } from '../types/ui'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 export function ConversationListItem({
   conversation,
@@ -20,7 +21,7 @@ export function ConversationListItem({
           <span className="block truncate text-sm font-semibold text-zinc-900">
             {getConversationPartner(conversation, loggedUserId)}
           </span>
-          <span className="mt-1 block text-xs text-zinc-500">Conversation</span>
+          <span className="mt-1 block text-xs text-zinc-500">{MESSAGING_TEXT.conversations.itemLabel}</span>
         </span>
         <time
           dateTime={new Date(conversation.lastMessageTimestamp * 1000).toISOString()}

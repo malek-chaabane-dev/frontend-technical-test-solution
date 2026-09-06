@@ -1,4 +1,5 @@
 import { createConversation } from '../conversations-api'
+import { MESSAGING_TEXT } from '../../constants/messaging'
 
 describe('createConversation', () => {
   afterEach(() => {
@@ -28,7 +29,7 @@ describe('createConversation', () => {
     const fetchMock = jest.fn()
     global.fetch = fetchMock
 
-    await expect(createConversation(1, 0)).rejects.toThrow('Le destinataire est invalide.')
+    await expect(createConversation(1, 0)).rejects.toThrow(MESSAGING_TEXT.errors.invalidRecipient)
     expect(fetchMock).not.toHaveBeenCalled()
   })
 })

@@ -1,4 +1,5 @@
 import type { MessageBubbleProps } from '../types/ui'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 function formatMessageTimestamp(timestamp: string): string {
   const numericTimestamp = Number(timestamp)
@@ -6,7 +7,7 @@ function formatMessageTimestamp(timestamp: string): string {
     Number.isFinite(numericTimestamp) ? numericTimestamp * 1000 : timestamp,
   )
 
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat('en-US', {
     dateStyle: 'short',
     timeStyle: 'short',
   }).format(date)
@@ -16,7 +17,9 @@ export function MessageBubble({ message, isMine }: MessageBubbleProps) {
   return (
     <li className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
       <article
-        aria-label={isMine ? 'Message envoyé' : 'Message reçu'}
+        aria-label={
+          isMine ? MESSAGING_TEXT.messages.sentLabel : MESSAGING_TEXT.messages.receivedLabel
+        }
         className={`max-w-[min(85%,36rem)] rounded-2xl px-4 py-3 ${
           isMine ? 'rounded-br-sm bg-brand text-white' : 'rounded-bl-sm bg-zinc-100 text-zinc-900'
         }`}

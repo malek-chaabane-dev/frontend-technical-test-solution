@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { getMessages } from '../services/messages-api'
 import { isAbortError } from '../services/api-client'
 import type { Message } from '../types/message'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 type UseConversationMessagesResult = {
   messages: Message[]
@@ -55,7 +56,7 @@ export function useConversationMessages(
         setError(
           requestError instanceof Error
             ? requestError
-            : new Error('Le chargement des messages a échoué.'),
+            : new Error(MESSAGING_TEXT.errors.messagesLoadFallback),
         )
       })
       .finally(() => {

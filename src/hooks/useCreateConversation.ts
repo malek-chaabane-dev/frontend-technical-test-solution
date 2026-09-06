@@ -3,6 +3,7 @@ import { createConversation } from '../services/conversations-api'
 import { ApiError } from '../services/api-client'
 import type { Conversation } from '../types/conversation'
 import { findConversationWithUser } from '../utils/conversation-utils'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 type UseCreateConversationResult = {
   create: (recipientId: number) => Promise<number | null>
@@ -24,7 +25,7 @@ export function useCreateConversation(
     async (recipientId: number): Promise<number | null> => {
       if (findConversationWithUser(conversations, loggedUserId, recipientId)) {
         const duplicateError = new ApiError(
-          'Une conversation existe déjà avec cet utilisateur.',
+          MESSAGING_TEXT.errors.duplicateConversation,
           400,
         )
         setError(duplicateError)
@@ -40,7 +41,7 @@ export function useCreateConversation(
         const normalizedError =
           requestError instanceof Error
             ? requestError
-            : new Error('La conversation n’a pas pu être créée.')
+            : new Error(MESSAGING_TEXT.errors.conversationCreateFallback)
         setError(normalizedError)
         return null
       } finally {

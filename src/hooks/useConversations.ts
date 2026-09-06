@@ -3,6 +3,7 @@ import { getConversations } from '../services/conversations-api'
 import { isAbortError } from '../services/api-client'
 import type { Conversation } from '../types/conversation'
 import type { AsyncState } from '../types/api'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 type UseConversationsResult = {
   conversations: Conversation[]
@@ -43,7 +44,7 @@ export function useConversations(userId: number): UseConversationsResult {
           error:
             requestError instanceof Error
               ? requestError
-              : new Error('Le chargement des conversations a échoué.'),
+              : new Error(MESSAGING_TEXT.errors.conversationsLoadFallback),
         }))
       })
       .finally(() => {

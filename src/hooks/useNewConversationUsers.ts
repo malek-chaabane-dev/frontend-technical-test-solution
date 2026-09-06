@@ -3,6 +3,7 @@ import { isAbortError } from '../services/api-client'
 import { getUsers } from '../services/users-api'
 import type { User } from '../types/user'
 import type { AsyncState } from '../types/api'
+import { MESSAGING_TEXT } from '../constants/messaging'
 
 type UseNewConversationUsersResult = {
   users: User[]
@@ -44,7 +45,7 @@ export function useNewConversationUsers(
             error:
               requestError instanceof Error
                 ? requestError
-                : new Error('Les utilisateurs n’ont pas pu être chargés.'),
+                : new Error(MESSAGING_TEXT.errors.usersLoadFallback),
           }))
         }
       })

@@ -1,4 +1,5 @@
 import { getJson } from '../api-client'
+import { MESSAGING_TEXT } from '../../constants/messaging'
 
 describe('api-client', () => {
   afterEach(() => {
@@ -15,7 +16,7 @@ describe('api-client', () => {
     await expect(getJson('/conversations/1')).rejects.toMatchObject({
       name: 'ApiError',
       status: 503,
-      message: 'Le service est temporairement indisponible.',
+      message: MESSAGING_TEXT.errors.serviceUnavailable,
     })
   })
 
@@ -30,7 +31,7 @@ describe('api-client', () => {
 
     await expect(getJson('/conversations/1')).rejects.toMatchObject({
       name: 'ApiError',
-      message: 'La réponse du service est invalide.',
+      message: MESSAGING_TEXT.errors.invalidResponse,
     })
   })
 
@@ -40,7 +41,7 @@ describe('api-client', () => {
     await expect(getJson('/messages/99')).rejects.toMatchObject({
       name: 'ApiError',
       status: 404,
-      message: 'La ressource demandée est introuvable.',
+      message: MESSAGING_TEXT.errors.resourceNotFound,
     })
   })
 

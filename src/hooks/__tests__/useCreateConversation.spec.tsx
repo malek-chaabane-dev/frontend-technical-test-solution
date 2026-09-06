@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useCreateConversation } from '../useCreateConversation'
 import type { Conversation } from '../../types/conversation'
+import { MESSAGING_TEXT } from '../../constants/messaging'
 
 const existingConversation: Conversation = {
   id: 1,
@@ -32,7 +33,7 @@ describe('useCreateConversation', () => {
 
     expect(createdConversationId).toBeNull()
     expect(result.current.error?.message).toBe(
-      'Une conversation existe déjà avec cet utilisateur.',
+      MESSAGING_TEXT.errors.duplicateConversation,
     )
     expect(fetchMock).not.toHaveBeenCalled()
   })

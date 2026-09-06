@@ -24,7 +24,7 @@ export function MessageComposer({ disabled, onSubmit }: MessageComposerProps) {
       await onSubmit(body.trim())
       setBody('')
     } catch {
-      setError("Le message n'a pas pu être envoyé. Vérifiez votre connexion et réessayez.")
+      setError(MESSAGING_TEXT.errors.sendMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -49,14 +49,14 @@ export function MessageComposer({ disabled, onSubmit }: MessageComposerProps) {
       ) : null}
       <div className="flex items-end gap-2">
         <label htmlFor="message-body" className="sr-only">
-          Votre message
+          {MESSAGING_TEXT.messages.composerLabel}
         </label>
         <textarea
           id="message-body"
           value={body}
           onChange={(event) => setBody(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={MESSAGING_TEXT.composePlaceholder}
+          placeholder={MESSAGING_TEXT.messages.composePlaceholder}
           rows={1}
           disabled={isDisabled}
           className="min-h-10 min-w-0 flex-1 resize-y rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-brand focus:ring-2 focus:ring-orange-100 disabled:bg-zinc-100"
@@ -66,7 +66,7 @@ export function MessageComposer({ disabled, onSubmit }: MessageComposerProps) {
           disabled={isDisabled || isEmpty}
           className="shrink-0 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:bg-zinc-300"
         >
-          {isDisabled ? 'Envoi...' : 'Envoyer'}
+          {isDisabled ? MESSAGING_TEXT.messages.sending : MESSAGING_TEXT.messages.send}
         </button>
       </div>
     </form>
