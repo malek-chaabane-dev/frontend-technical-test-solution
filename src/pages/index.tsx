@@ -7,6 +7,8 @@ import { ConversationList } from '../components/ConversationList'
 import { ConversationPanel } from '../components/ConversationPanel'
 import { useConversations } from '../hooks/useConversations'
 import { getLoggedUserId } from '../utils/getLoggedUserId'
+import { useConversationMessages } from '../hooks/useConversationMessages'
+import { getConversationPartner } from '../utils/conversation-utils'
 
 export default function Home(): ReactElement {
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(
@@ -16,6 +18,15 @@ export default function Home(): ReactElement {
   const isConversationOpen = selectedConversationId !== null
   const loggedUserId = getLoggedUserId()
   const { conversations, isLoading, error, retry } = useConversations(loggedUserId)
+  const selectedConversation = conversations.find(
+    (conversation) => conversation.id === selectedConversationId,
+  )
+  const {
+    messages,
+    isLoading: areMessagesLoading,
+    error: messagesError,
+    retry: retryMessages,
+  } = useConversationMessages(selectedConversationId)
 
   return (
     <>
@@ -62,6 +73,16 @@ export default function Home(): ReactElement {
           >
             <ConversationPanel
               selectedConversationId={selectedConversationId}
+              partnerName={
+                selectedConversation
+                  ? getConversationPartner(selectedConversation, loggedUserId)
+                  : null
+              }
+              loggedUserId={loggedUserId}
+              messages={messages}
+              isLoading={areMessagesLoading}
+              error={messagesError}
+              onRetry={retryMessages}
               onBack={() => setSelectedConversationId(null)}
             />
           </div>

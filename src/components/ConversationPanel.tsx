@@ -1,12 +1,26 @@
 import { EmptyState } from './EmptyState'
+import { MessageList } from './MessageList'
+import type { Message } from '../types/message'
 
 type ConversationPanelProps = {
   selectedConversationId: number | null
+  partnerName: string | null
+  loggedUserId: number
+  messages: Message[]
+  isLoading: boolean
+  error: Error | null
+  onRetry: () => void
   onBack: () => void
 }
 
 export function ConversationPanel({
   selectedConversationId,
+  partnerName,
+  loggedUserId,
+  messages,
+  isLoading,
+  error,
+  onRetry,
   onBack,
 }: ConversationPanelProps) {
   const hasSelection = selectedConversationId !== null
@@ -28,16 +42,26 @@ export function ConversationPanel({
             </button>
           ) : null}
           <h2 className="truncate text-sm font-semibold text-zinc-900">
-            Conversation
+            {partnerName ?? 'Conversation'}
           </h2>
         </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <EmptyState
-          title="Aucune conversation sélectionnée"
-          description="Sélectionnez une conversation pour afficher les messages."
-        />
+        {!hasSelection ? (
+          <EmptyState
+            title="Aucune conversation sélectionnée"
+            description="Sélectionnez une conversation pour afficher les messages."
+          />
+        ) : (
+          <MessageList
+            messages={messages}
+            loggedUserId={loggedUserId}
+            isLoading={isLoading}
+            error={error}
+            onRetry={onRetry}
+          />
+        )}
       </div>
 
       <div className="shrink-0 border-t border-zinc-200 bg-white p-3">
